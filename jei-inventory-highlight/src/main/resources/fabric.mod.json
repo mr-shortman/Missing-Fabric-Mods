@@ -1,0 +1,32 @@
+{
+	"schemaVersion": 1,
+	"id": "jei_inventory_highlight",
+	"version": "${version}",
+	"name": "JEI Inventory Highlight",
+	"description": "Double-click the JEI search bar to highlight matching items in the open inventory and dim everything else.",
+	"authors": [
+		"mr-shortman"
+	],
+	"contact": {
+		"sources": "https://github.com/mr-shortman/Missing-Fabric-Mods"
+	},
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"io.github.mrshortman.jeihighlight.JeiInventoryHighlight"
+		],
+		"jei_mod_plugin": [
+			"io.github.mrshortman.jeihighlight.JeiHighlightPlugin"
+		]
+	},
+	"mixins": [
+		"jei_inventory_highlight.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"fabric-api": "*",
+		"jei": "*"
+	}
+}
