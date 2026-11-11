@@ -24,5 +24,6 @@ item gets a yellow frame, all other slots are dimmed. Double-click again to swit
 ./gradlew build
 ```
 
-Gradle has to run on JDK 25 (set `JAVA_HOME` accordingly). The jar ends up in `build/libs/`.
+A JDK 25 has to be installed; Gradle picks it up on its own (`gradle/gradle-daemon-jvm.properties`).
+The jar ends up in `build/libs/`.
 `./gradlew runClient` starts a dev client with JEI installed.
