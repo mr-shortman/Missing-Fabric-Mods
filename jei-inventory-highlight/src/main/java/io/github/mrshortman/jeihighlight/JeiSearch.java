@@ -6,7 +6,8 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -55,7 +57,7 @@ public final class JeiSearch {
 		/** @return true if the stack itself matches the search */
 		boolean matches(ItemStack stack);
 
-		/** @return how many stacks stored inside this stack (shulker box, bundle, ...) match the search */
+		/** @return how many stacks stored inside this stack (shulker box, bundle, backpack, ...) match the search */
 		int matchesInside(ItemStack stack);
 	}
 
@@ -166,14 +168,21 @@ public final class JeiSearch {
 	}
 
 	private static int countInside(IJeiRuntime rt, IIngredientHelper<ItemStack> helper, ItemStack stack, int depth) {
-		int count = 0;
-		ItemContainerContents container = stack.get(DataComponents.CONTAINER);
-		if (container != null) {
-			count += countInside(rt, helper, container, container.nonEmptyItems(), depth);
+		// Stored items are never part of an item's defaults, so only the stack's own component changes are
+		// looked at. Going by the value instead of by the component type also covers mods that keep their
+		// contents in a component of their own (e.g. Traveler's Backpack's "travelersbackpack:backpack_container").
+		DataComponentPatch patch = stack.getComponentsPatch();
+		if (patch.isEmpty()) {
+			return 0;
 		}
-		BundleContents bundle = stack.get(DataComponents.BUNDLE_CONTENTS);
-		if (bundle != null) {
-			count += countInside(rt, helper, bundle, bundle.items(), depth);
+		int count = 0;
+		for (Map.Entry<DataComponentType<?>, Optional<?>> entry : patch.entrySet()) {
+			Object value = entry.getValue().orElse(null);
+			if (value instanceof ItemContainerContents container) {
+				count += countInside(rt, helper, container, container.nonEmptyItems(), depth);
+			} else if (value instanceof BundleContents bundle) {
+				count += countInside(rt, helper, bundle, bundle.items(), depth);
+			}
 		}
 		return count;
 	}
