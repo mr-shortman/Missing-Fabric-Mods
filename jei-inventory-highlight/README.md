@@ -9,6 +9,8 @@ item gets a yellow frame, all other slots are dimmed. Double-click again to swit
 - The JEI search bar has a yellow frame while the mode is on.
 - Matching is done by JEI itself, so `@mod`, `#tag`, tooltip search etc. work exactly like in the JEI item list.
   Potions and enchanted books are matched by their exact variant.
+- Shulker boxes, bundles and other items that carry their contents with them get a cyan frame and a number in
+  the top-left corner: how many stacks inside them match the search (nested containers included).
 - Nothing is dimmed while the search bar is empty or JEI is hidden.
 - The on/off state is remembered in `config/jei_inventory_highlight.properties`.
 

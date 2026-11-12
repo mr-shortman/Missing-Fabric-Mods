@@ -6,8 +6,12 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.component.BundleContents;
+import net.minecraft.world.item.component.ItemContainerContents;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Field;
@@ -15,8 +19,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * Everything this mod needs from JEI: where the search bar is and which items the current search matches.
@@ -36,6 +41,24 @@ public final class JeiSearch {
 	private static Set<Object> matchingSubtypes = Set.of();
 	private static @Nullable Set<Object> knownSubtypes;
 
+	/**
+	 * Matches inside carried containers, per contents component. Those components are immutable, so their
+	 * identity is a safe key; the map is dropped whenever the search changes.
+	 */
+	private static final Map<Object, Integer> matchesInside = new IdentityHashMap<>();
+	private static final int MAX_CACHED_CONTAINERS = 1024;
+	/** A shulker box may hold bundles; anything nested deeper than this is not worth following. */
+	private static final int MAX_NESTING = 4;
+
+	/** The JEI search as it applies to the stacks of an inventory. */
+	public interface Matcher {
+		/** @return true if the stack itself matches the search */
+		boolean matches(ItemStack stack);
+
+		/** @return how many stacks stored inside this stack (shulker box, bundle, ...) match the search */
+		int matchesInside(ItemStack stack);
+	}
+
 	private JeiSearch() {
 	}
 
@@ -47,6 +70,7 @@ public final class JeiSearch {
 		matchingItems = Set.of();
 		matchingSubtypes = Set.of();
 		knownSubtypes = null;
+		matchesInside.clear();
 
 		if (newRuntime != null) {
 			inspectOverlay(newRuntime.getIngredientListOverlay());
@@ -108,10 +132,9 @@ public final class JeiSearch {
 	}
 
 	/**
-	 * @return a test for "does this stack match the JEI search", or null if there is nothing to highlight
-	 * (JEI hidden or search bar empty).
+	 * @return the current JEI search, or null if there is nothing to highlight (JEI hidden or search bar empty).
 	 */
-	public static @Nullable Predicate<ItemStack> currentMatcher() {
+	public static @Nullable Matcher currentMatcher() {
 		IJeiRuntime rt = runtime;
 		if (rt == null || !isSearchVisible(rt)) {
 			return null;
@@ -127,8 +150,54 @@ public final class JeiSearch {
 			matchingSubtypes = collectSubtypes(helper, rt.getIngredientFilter().getFilteredItemStacks(), items);
 			matchingItems = items;
 			cachedFilterText = filterText;
+			matchesInside.clear();
 		}
-		return stack -> matches(rt, helper, stack);
+		return new Matcher() {
+			@Override
+			public boolean matches(ItemStack stack) {
+				return JeiSearch.matches(rt, helper, stack);
+			}
+
+			@Override
+			public int matchesInside(ItemStack stack) {
+				return countInside(rt, helper, stack, 0);
+			}
+		};
+	}
+
+	private static int countInside(IJeiRuntime rt, IIngredientHelper<ItemStack> helper, ItemStack stack, int depth) {
+		int count = 0;
+		ItemContainerContents container = stack.get(DataComponents.CONTAINER);
+		if (container != null) {
+			count += countInside(rt, helper, container, container.nonEmptyItems(), depth);
+		}
+		BundleContents bundle = stack.get(DataComponents.BUNDLE_CONTENTS);
+		if (bundle != null) {
+			count += countInside(rt, helper, bundle, bundle.items(), depth);
+		}
+		return count;
+	}
+
+	private static int countInside(IJeiRuntime rt, IIngredientHelper<ItemStack> helper, Object contents, Iterable<ItemStackTemplate> items, int depth) {
+		Integer cached = matchesInside.get(contents);
+		if (cached != null) {
+			return cached;
+		}
+		int count = 0;
+		for (ItemStackTemplate template : items) {
+			ItemStack inner = template.create();
+			if (matches(rt, helper, inner)) {
+				count++;
+			}
+			if (depth < MAX_NESTING) {
+				count += countInside(rt, helper, inner, depth + 1);
+			}
+		}
+		if (matchesInside.size() >= MAX_CACHED_CONTAINERS) {
+			matchesInside.clear();
+		}
+		matchesInside.put(contents, count);
+		return count;
 	}
 
 	private static boolean matches(IJeiRuntime rt, IIngredientHelper<ItemStack> helper, ItemStack stack) {
