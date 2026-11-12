@@ -14,7 +14,7 @@ item gets a yellow frame, all other slots are dimmed. Double-click again to swit
 
 ## Requirements
 
-- Minecraft 26.1.2, Fabric Loader ≥ 0.20.1, Java 25
+- Minecraft 26.1.2, Fabric Loader ≥ 0.18.4, Java 25
 - Fabric API
 - JEI for 26.1.2
 
