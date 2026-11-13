@@ -7,7 +7,7 @@ Small Fabric mods for things that were missing. Each folder is a standalone Grad
 | [JEI Inventory Highlight](jei-inventory-highlight/) | 26.1.2 | Double-click the JEI search bar to highlight matching items in the open inventory and dim the rest. |
 | [Create Address Autocomplete](create-address-autocomplete/) | 26.1.2 | Suggests the package addresses that exist around you when you type an address into a Create Fly factory gauge. |
 | [Pointed Dripstone Recipes](pointed-dripstone-recipes/) (datapack) | 26.1.2 | Turns dripstone blocks back into pointed dripstone with the stonecutter or Create's crushing wheels. |
-| [Iron Sheet Recycling](iron-sheet-recycling/) (datapack) | 26.1.2 | Turns Create Fly iron sheets back into iron ingots in a furnace, or into nuggets with crushing wheels. |
+| [Sheet Recycling](sheet-recycling/) (datapack) | 26.1.2 | Turns Create Fly iron, copper, golden and brass sheets back into ingots in a furnace, or into nuggets with crushing wheels. |
 
 ## Download
 

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.1,
+  "group": "gold_ingot",
+  "ingredient": "create:golden_sheet",
+  "result": {
+    "id": "minecraft:gold_ingot"
+  }
+}
