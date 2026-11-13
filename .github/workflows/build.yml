@@ -48,6 +48,7 @@ jobs:
         pack:
           - pointed-dripstone-recipes
           - sheet-recycling
+          - scoria-melting
     steps:
       - uses: actions/checkout@v4
 

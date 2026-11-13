@@ -1,0 +1,11 @@
+{
+  "type": "create:mixing",
+  "heat_requirement": "superheated",
+  "ingredients": ["create:scoria", "create:scoria", "create:scoria", "create:scoria"],
+  "fluid_results": [
+    {
+      "amount": 40500,
+      "id": "minecraft:lava"
+    }
+  ]
+}

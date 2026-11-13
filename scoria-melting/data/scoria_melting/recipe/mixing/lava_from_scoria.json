@@ -1,0 +1,11 @@
+{
+  "type": "create:mixing",
+  "heat_requirement": "heated",
+  "ingredients": ["create:scoria", "create:scoria"],
+  "fluid_results": [
+    {
+      "amount": 10125,
+      "id": "minecraft:lava"
+    }
+  ]
+}

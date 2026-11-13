@@ -8,6 +8,7 @@ Small Fabric mods for things that were missing. Each folder is a standalone Grad
 | [Create Address Autocomplete](create-address-autocomplete/) | 26.1.2 | Suggests the package addresses that exist around you when you type an address into a Create Fly factory gauge. |
 | [Pointed Dripstone Recipes](pointed-dripstone-recipes/) (datapack) | 26.1.2 | Turns dripstone blocks back into pointed dripstone with the stonecutter or Create's crushing wheels. |
 | [Sheet Recycling](sheet-recycling/) (datapack) | 26.1.2 | Turns Create Fly iron, copper, golden and brass sheets back into ingots in a furnace, or into nuggets with crushing wheels. |
+| [Scoria Melting](scoria-melting/) (datapack) | 26.1.2 | Melts Create Fly scoria into lava in a heated mixer, twice as much when superheated. |
 
 ## Download
 
