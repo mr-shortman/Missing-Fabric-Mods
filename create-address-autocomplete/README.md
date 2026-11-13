@@ -3,8 +3,15 @@
 Client-side Fabric mod for Minecraft **26.1.2** and [Create Fly](https://modrinth.com/mod/create-fly).
 
 When you type a package address into a **factory gauge**, the address box now suggests the addresses that
-already exist around you, so you pick one instead of typing it from memory. Suggestions work exactly like
-Create's own clipboard suggestions: start typing, pick with the arrow keys or the mouse, confirm with Tab or a click.
+already exist around you, so you pick one instead of typing it from memory.
+
+- Start typing: the list only shows addresses that begin with what is in the box. An empty box shows all of
+  them (right-click the box to clear it).
+- Pick an entry with a **mouse click**, or move with the arrow keys and press **Enter** or Tab.
+- Escape closes the screen as usual.
+
+Picking with the mouse or Enter and filtering by the whole text are fixes on top of Create Fly, whose own
+clipboard suggestions ignore clicks and Enter. Clipboard suggestions benefit from them as well.
 
 The list contains, in this order:
 
@@ -14,7 +21,7 @@ The list contains, in this order:
 4. the addresses other factory gauges and redstone requesters already send to.
 
 The same suggestions show up in every other Create address box (redstone requester, stock keeper, package
-filter), because they all share one list.
+filter), because they all share one list. Station name suggestions in train schedules are not touched.
 
 ## What it can and cannot see
 

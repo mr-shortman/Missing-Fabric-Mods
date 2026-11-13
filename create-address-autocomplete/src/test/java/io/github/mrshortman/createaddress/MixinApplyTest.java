@@ -6,24 +6,31 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import io.github.mrshortman.createaddress.mixin.DestinationSuggestionsAccessor;
+import io.github.mrshortman.createaddress.mixin.CommandSuggestionsAccessor;
 
 /**
- * Runs inside Fabric Loader with Create Fly on the classpath. Loading the two Create classes applies our
- * mixins; if Create renamed something they fail to apply and so does this test.
+ * Runs inside Fabric Loader with Create Fly on the classpath. Loading the target classes applies our mixins;
+ * if Create or Minecraft renamed something they fail to apply and so does this test.
  */
 class MixinApplyTest {
 	@Test
-	void mixinsApplyToCreate() throws ClassNotFoundException {
-		ClassLoader loader = getClass().getClassLoader();
+	void mixinsApply() throws ClassNotFoundException {
+		assertTrue(AddressSuggestions.class.isAssignableFrom(
+				load("com.zurrtum.create.client.content.trains.schedule.DestinationSuggestions")));
+		assertTrue(SuggestionPicker.class.isAssignableFrom(
+				load("com.zurrtum.create.client.content.logistics.AddressEditBox")));
+		assertTrue(CommandSuggestionsAccessor.class.isAssignableFrom(
+				load("net.minecraft.client.gui.components.CommandSuggestions")));
+		assertTrue(hasMethod(load("com.zurrtum.create.client.content.logistics.AddressEditBoxHelper"),
+				"createAddress$addKnownAddresses"));
+		assertTrue(hasMethod(load("net.minecraft.client.MouseHandler"), "createAddress$clickSuggestionFirst"));
+	}
 
-		Class<?> suggestions = Class.forName(
-				"com.zurrtum.create.client.content.trains.schedule.DestinationSuggestions", false, loader);
-		assertTrue(DestinationSuggestionsAccessor.class.isAssignableFrom(suggestions));
+	private Class<?> load(String name) throws ClassNotFoundException {
+		return Class.forName(name, false, getClass().getClassLoader());
+	}
 
-		Class<?> helper = Class.forName(
-				"com.zurrtum.create.client.content.logistics.AddressEditBoxHelper", false, loader);
-		assertTrue(Arrays.stream(helper.getDeclaredMethods())
-				.anyMatch(method -> method.getName().contains("createAddress$addKnownAddresses")));
+	private static boolean hasMethod(Class<?> type, String namePart) {
+		return Arrays.stream(type.getDeclaredMethods()).anyMatch(method -> method.getName().contains(namePart));
 	}
 }

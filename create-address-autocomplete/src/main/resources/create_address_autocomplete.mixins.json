@@ -5,7 +5,10 @@
 	"compatibilityLevel": "JAVA_25",
 	"client": [
 		"AddressEditBoxHelperMixin",
-		"DestinationSuggestionsAccessor"
+		"AddressEditBoxMixin",
+		"CommandSuggestionsAccessor",
+		"DestinationSuggestionsMixin",
+		"MouseHandlerMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

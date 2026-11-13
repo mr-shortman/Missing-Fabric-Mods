@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.zurrtum.create.client.content.logistics.AddressEditBoxHelper;
 import com.zurrtum.create.client.content.trains.schedule.DestinationSuggestions;
 
+import io.github.mrshortman.createaddress.AddressSuggestions;
 import io.github.mrshortman.createaddress.KnownAddresses;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -21,6 +22,8 @@ public abstract class AddressEditBoxHelperMixin {
 	@Inject(method = "createSuggestions", at = @At("RETURN"))
 	private static void createAddress$addKnownAddresses(Screen screen, EditBox input, boolean anchorToBottom,
 			String localAddress, CallbackInfoReturnable<DestinationSuggestions> cir) {
-		KnownAddresses.addTo(((DestinationSuggestionsAccessor) cir.getReturnValue()).createAddress$getOptions());
+		AddressSuggestions suggestions = (AddressSuggestions) cir.getReturnValue();
+		suggestions.createAddress$markAddressBox();
+		KnownAddresses.addTo(suggestions.createAddress$options());
 	}
 }
