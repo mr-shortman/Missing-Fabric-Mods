@@ -1,0 +1,7 @@
+{
+  "pack": {
+    "description": "Turn Create iron sheets back into iron ingots (furnace, blast furnace) or nuggets (crushing wheels)",
+    "min_format": 101,
+    "max_format": 101
+  }
+}

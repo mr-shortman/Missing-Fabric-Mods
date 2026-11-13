@@ -1,0 +1,16 @@
+{
+  "type": "create:crushing",
+  "ingredient": "create:iron_sheet",
+  "processing_time": 150,
+  "results": [
+    {
+      "count": 6,
+      "id": "minecraft:iron_nugget"
+    },
+    {
+      "chance": 0.5,
+      "count": 3,
+      "id": "minecraft:iron_nugget"
+    }
+  ]
+}

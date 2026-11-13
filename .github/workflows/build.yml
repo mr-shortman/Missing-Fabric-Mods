@@ -47,6 +47,7 @@ jobs:
         # Every datapack is a folder with pack.mcmeta at its top.
         pack:
           - pointed-dripstone-recipes
+          - iron-sheet-recycling
     steps:
       - uses: actions/checkout@v4
 
