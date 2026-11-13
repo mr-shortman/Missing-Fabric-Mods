@@ -1,0 +1,64 @@
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.mod }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        # Every mod is a standalone Gradle project in its own folder.
+        mod:
+          - jei-inventory-highlight
+          - create-address-autocomplete
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        working-directory: ${{ matrix.mod }}
+        run: ./gradlew build --console=plain
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.mod }}
+          path: ${{ matrix.mod }}/build/libs/*.jar
+          if-no-files-found: error
+
+  # Keeps one release called "latest" that always holds the jars of the default branch.
+  release:
+    name: Publish latest jars
+    needs: build
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: jars
+          merge-multiple: true
+
+      - name: Replace the "latest" release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release delete latest --cleanup-tag --yes || true
+          gh release create latest jars/*.jar \
+            --target "$GITHUB_SHA" \
+            --title "Latest build" \
+            --notes "Built from commit $GITHUB_SHA. This release is replaced on every push to the default branch." \
+            --latest

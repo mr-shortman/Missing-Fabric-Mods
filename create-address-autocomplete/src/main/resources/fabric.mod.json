@@ -1,0 +1,23 @@
+{
+	"schemaVersion": 1,
+	"id": "create_address_autocomplete",
+	"version": "${version}",
+	"name": "Create Address Autocomplete",
+	"description": "Suggests the package addresses that exist around you (frogports, postboxes, packager signs, other gauges) while you type an address into a Create factory gauge.",
+	"authors": [
+		"mr-shortman"
+	],
+	"contact": {
+		"sources": "https://github.com/mr-shortman/Missing-Fabric-Mods"
+	},
+	"environment": "client",
+	"mixins": [
+		"create_address_autocomplete.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"create": ">=6.0.9-"
+	}
+}
