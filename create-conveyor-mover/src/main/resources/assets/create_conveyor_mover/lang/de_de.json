@@ -1,0 +1,12 @@
+{
+	"create_conveyor_mover.selected": "Kettenförderer aufgenommen - klicke auf den neuen Platz (erneut anklicken bricht ab)",
+	"create_conveyor_mover.cancelled": "Verschieben abgebrochen",
+	"create_conveyor_mover.valid": "Kann hierhin verschoben werden ✔",
+	"create_conveyor_mover.moved": "Kettenförderer verschoben",
+	"create_conveyor_mover.gone": "Der Kettenförderer ist nicht mehr da",
+	"create_conveyor_mover.obstructed": "Hier ist kein Platz für den Kettenförderer",
+	"create_conveyor_mover.next_to_conveyor": "Zu nah an einem anderen Kettenförderer",
+	"create_conveyor_mover.neighbour_missing": "Der Kettenförderer bei %s ist nicht geladen oder hat seine Verbindung verloren",
+	"create_conveyor_mover.frogport_too_far": "Der Paketfrosch bei %s wäre zu weit von seiner Kette entfernt",
+	"create_conveyor_mover.frogport_above": "Der Paketfrosch bei %s läge über seiner Kette"
+}

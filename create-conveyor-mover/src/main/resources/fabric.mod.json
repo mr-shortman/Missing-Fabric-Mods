@@ -1,0 +1,23 @@
+{
+	"schemaVersion": 1,
+	"id": "create_conveyor_mover",
+	"version": "${version}",
+	"name": "Create Chain Conveyor Mover",
+	"description": "Move a Create chain conveyor with the wrench without tearing down its chains, packages and frogports, as long as the connection rules still hold at the new spot.",
+	"authors": [
+		"mr-shortman"
+	],
+	"contact": {
+		"sources": "https://github.com/mr-shortman/Missing-Fabric-Mods"
+	},
+	"environment": "*",
+	"mixins": [
+		"create_conveyor_mover.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"create": ">=6.0.9-"
+	}
+}

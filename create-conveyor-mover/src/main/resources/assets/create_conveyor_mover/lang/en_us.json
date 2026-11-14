@@ -1,0 +1,12 @@
+{
+	"create_conveyor_mover.selected": "Conveyor picked up - click where it should go (click it again to cancel)",
+	"create_conveyor_mover.cancelled": "Move cancelled",
+	"create_conveyor_mover.valid": "Can move here ✔",
+	"create_conveyor_mover.moved": "Conveyor moved",
+	"create_conveyor_mover.gone": "The conveyor is no longer there",
+	"create_conveyor_mover.obstructed": "No room for the conveyor here",
+	"create_conveyor_mover.next_to_conveyor": "Too close to another conveyor",
+	"create_conveyor_mover.neighbour_missing": "The conveyor at %s is not loaded or lost its connection",
+	"create_conveyor_mover.frogport_too_far": "The frogport at %s would be too far from its chain",
+	"create_conveyor_mover.frogport_above": "The frogport at %s would end up above its chain"
+}

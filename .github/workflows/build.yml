@@ -17,6 +17,7 @@ jobs:
         mod:
           - jei-inventory-highlight
           - create-address-autocomplete
+          - create-conveyor-mover
     steps:
       - uses: actions/checkout@v4
 
