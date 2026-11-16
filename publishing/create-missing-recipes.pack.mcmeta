@@ -1,0 +1,7 @@
+{
+  "pack": {
+    "description": "Create Missing Recipes: recycle metal sheets, uncraft dripstone blocks, melt scoria into lava",
+    "min_format": 101,
+    "max_format": 101
+  }
+}

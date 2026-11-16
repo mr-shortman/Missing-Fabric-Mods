@@ -11,6 +11,10 @@ Small Fabric mods for things that were missing. Each folder is a standalone Grad
 | [Sheet Recycling](sheet-recycling/) (datapack) | 26.1.2 | Turns Create Fly iron, copper, golden and brass sheets back into ingots in a furnace, or into nuggets with crushing wheels. |
 | [Scoria Melting](scoria-melting/) (datapack) | 26.1.2 | Melts Create Fly scoria into lava in a heated mixer, twice as much when superheated. |
 
+## Publishing
+
+How the mods get onto Modrinth and CurseForge, and the listing texts, are in [PUBLISHING.md](PUBLISHING.md).
+
 ## Download
 
 The newest jars of all mods, and the datapacks as zips, are on the [latest release](https://github.com/mr-shortman/Missing-Fabric-Mods/releases/latest).
