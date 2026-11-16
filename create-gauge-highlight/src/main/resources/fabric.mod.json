@@ -1,0 +1,23 @@
+{
+	"schemaVersion": 1,
+	"id": "create_gauge_highlight",
+	"version": "${version}",
+	"name": "Create Gauge Highlight",
+	"description": "Look at a Create factory gauge with the wrench in hand and every gauge on that wall that uses its item as an input blinks.",
+	"authors": [
+		"mr-shortman"
+	],
+	"contact": {
+		"sources": "https://github.com/mr-shortman/Missing-Fabric-Mods"
+	},
+	"environment": "client",
+	"mixins": [
+		"create_gauge_highlight.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"create": ">=6.0.9-"
+	}
+}

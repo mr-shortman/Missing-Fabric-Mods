@@ -1,0 +1,5 @@
+{
+	"create_gauge_highlight.used": "%s wird von %s Anzeigen verwendet",
+	"create_gauge_highlight.used_once": "%s wird von 1 Anzeige verwendet",
+	"create_gauge_highlight.unused": "Keine Anzeige an dieser Wand verwendet %s"
+}

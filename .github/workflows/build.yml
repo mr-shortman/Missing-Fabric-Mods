@@ -18,6 +18,7 @@ jobs:
           - jei-inventory-highlight
           - create-address-autocomplete
           - create-conveyor-mover
+          - create-gauge-highlight
     steps:
       - uses: actions/checkout@v4
 

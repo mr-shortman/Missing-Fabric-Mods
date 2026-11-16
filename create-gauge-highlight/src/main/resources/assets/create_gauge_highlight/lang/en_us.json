@@ -1,0 +1,5 @@
+{
+	"create_gauge_highlight.used": "%s is used by %s gauges",
+	"create_gauge_highlight.used_once": "%s is used by 1 gauge",
+	"create_gauge_highlight.unused": "No gauge on this wall uses %s"
+}
