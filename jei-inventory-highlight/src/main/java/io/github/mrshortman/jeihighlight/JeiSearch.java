@@ -37,6 +37,8 @@ public final class JeiSearch {
 	// JEI's API does not expose the search bar widget, so these two are looked up reflectively on the overlay.
 	private static @Nullable EditBox searchField;
 	private static @Nullable Method isSearchDisplayed;
+	/** JEI's own way to focus its search bar, which also tells JEI's keyboard handling about it. */
+	private static @Nullable Method focusSearchField;
 
 	private static @Nullable String cachedFilterText;
 	private static Set<Item> matchingItems = Set.of();
@@ -68,6 +70,7 @@ public final class JeiSearch {
 		runtime = newRuntime;
 		searchField = null;
 		isSearchDisplayed = null;
+		focusSearchField = null;
 		cachedFilterText = null;
 		matchingItems = Set.of();
 		matchingSubtypes = Set.of();
@@ -101,6 +104,15 @@ public final class JeiSearch {
 		}
 		if (searchField == null) {
 			JeiInventoryHighlight.LOGGER.warn("JEI search bar not found, double-click toggling is unavailable with this JEI version");
+			return;
+		}
+		try {
+			Method focus = searchField.getClass().getMethod("focus");
+			if (focus.getReturnType() == void.class) {
+				focusSearchField = focus;
+			}
+		} catch (NoSuchMethodException | RuntimeException e) {
+			JeiInventoryHighlight.LOGGER.debug("JEI search bar has no focus() method, focusing it directly", e);
 		}
 	}
 
@@ -112,6 +124,25 @@ public final class JeiSearch {
 			return null;
 		}
 		return field;
+	}
+
+	/** Puts the cursor into the JEI search bar, if it is shown and has nothing typed in yet. */
+	static void focusSearchFieldIfEmpty() {
+		EditBox field = visibleSearchField();
+		if (field == null || !field.getValue().isEmpty()) {
+			return;
+		}
+		Method focus = focusSearchField;
+		if (focus != null) {
+			try {
+				focus.invoke(field);
+				return;
+			} catch (ReflectiveOperationException | RuntimeException e) {
+				JeiInventoryHighlight.LOGGER.warn("Could not focus the JEI search bar", e);
+				focusSearchField = null;
+			}
+		}
+		field.setFocused(true);
 	}
 
 	public static boolean isOverSearchField(double mouseX, double mouseY) {

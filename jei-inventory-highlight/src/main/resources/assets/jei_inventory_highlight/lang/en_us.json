@@ -10,5 +10,12 @@
 	"screen.jei_inventory_highlight.settings.dimmed_slots_opacity": "Dimmed slots: %s%% opacity",
 	"screen.jei_inventory_highlight.settings.preview": "Preview",
 	"screen.jei_inventory_highlight.settings.defaults": "Reset",
-	"key.jei_inventory_highlight.settings": "JEI Inventory Highlight settings"
+	"key.jei_inventory_highlight.settings": "JEI Inventory Highlight settings",
+	"screen.jei_inventory_highlight.settings.shortcuts": "Shortcuts",
+	"screen.jei_inventory_highlight.settings.double_tap": "Press %s twice",
+	"screen.jei_inventory_highlight.settings.double_tap.tooltip": "Pressing %s twice quickly opens the inventory and switches the highlight on or off.",
+	"screen.jei_inventory_highlight.settings.toggle_key": "On/off in any inventory: %s",
+	"key.jei_inventory_highlight.toggle": "Toggle JEI inventory highlight",
+	"message.jei_inventory_highlight.enabled": "Inventory highlight: on",
+	"message.jei_inventory_highlight.disabled": "Inventory highlight: off"
 }

@@ -16,15 +16,19 @@ public final class HighlightConfig {
 	private static final String KEY_ENABLED = "enabled";
 	private static final String KEY_HIGHLIGHT_COLOR = "highlight_color";
 	private static final String KEY_DIM_OPACITY = "dim_opacity";
+	private static final String KEY_DOUBLE_TAP_INVENTORY = "double_tap_inventory";
 
 	/** RGB of the frame around matching slots and around the JEI search bar. */
 	public static final int DEFAULT_HIGHLIGHT_COLOR = 0xFFD83D;
 	/** Opacity of the layer that greys out non-matching slots, in percent. */
 	public static final int DEFAULT_DIM_OPACITY = 75;
+	/** Whether pressing the inventory key twice quickly opens the inventory with the highlight mode toggled. */
+	public static final boolean DEFAULT_DOUBLE_TAP_INVENTORY = true;
 
 	private static boolean enabled;
 	private static int highlightColor = DEFAULT_HIGHLIGHT_COLOR;
 	private static int dimOpacity = DEFAULT_DIM_OPACITY;
+	private static boolean doubleTapInventory = DEFAULT_DOUBLE_TAP_INVENTORY;
 
 	private HighlightConfig() {
 	}
@@ -48,10 +52,15 @@ public final class HighlightConfig {
 		return dimOpacity;
 	}
 
+	public static boolean doubleTapInventory() {
+		return doubleTapInventory;
+	}
+
 	/** Applies and saves new settings, e.g. from the settings screen. */
-	public static void set(int newHighlightColor, int newDimOpacity) {
+	public static void set(int newHighlightColor, int newDimOpacity, boolean newDoubleTapInventory) {
 		highlightColor = newHighlightColor & 0xFFFFFF;
 		dimOpacity = clampOpacity(newDimOpacity);
+		doubleTapInventory = newDoubleTapInventory;
 		save();
 	}
 
@@ -104,6 +113,11 @@ public final class HighlightConfig {
 			}
 		}
 
+		String doubleTap = properties.getProperty(KEY_DOUBLE_TAP_INVENTORY);
+		if (doubleTap != null) {
+			doubleTapInventory = Boolean.parseBoolean(doubleTap.strip());
+		}
+
 		String opacity = properties.getProperty(KEY_DIM_OPACITY);
 		if (opacity != null) {
 			try {
@@ -121,6 +135,7 @@ public final class HighlightConfig {
 		// Without the '#', which Properties would escape.
 		properties.setProperty(KEY_HIGHLIGHT_COLOR, String.format(Locale.ROOT, "%06X", highlightColor));
 		properties.setProperty(KEY_DIM_OPACITY, Integer.toString(dimOpacity));
+		properties.setProperty(KEY_DOUBLE_TAP_INVENTORY, Boolean.toString(doubleTapInventory));
 		try {
 			Files.createDirectories(file.getParent());
 			try (Writer writer = Files.newBufferedWriter(file)) {

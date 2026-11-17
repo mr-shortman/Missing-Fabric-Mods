@@ -19,7 +19,7 @@ public final class JeiInventoryHighlight implements ClientModInitializer {
 	public static final String MOD_ID = "jei_inventory_highlight";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	/** JEI consumes clicks on its search bar, so our listener has to run before JEI's. */
+	/** JEI consumes clicks on its search bar and keys while it has focus, so our listeners have to run before JEI's. */
 	private static final Identifier BEFORE_JEI = Identifier.fromNamespaceAndPath(MOD_ID, "before_jei");
 	private static final long DOUBLE_CLICK_MILLIS = 300;
 
@@ -34,8 +34,15 @@ public final class JeiInventoryHighlight implements ClientModInitializer {
 	public void onInitializeClient() {
 		HighlightConfig.load();
 
+		KeyMappingHelper.registerKeyMapping(HighlightShortcuts.TOGGLE_HIGHLIGHT);
 		KeyMappingHelper.registerKeyMapping(OPEN_SETTINGS);
+		// Key bindings only get clicks while no screen is open; inside screens HighlightShortcuts listens itself.
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			while (HighlightShortcuts.TOGGLE_HIGHLIGHT.consumeClick()) {
+				if (client.screen == null) {
+					HighlightShortcuts.toggleInGame(client);
+				}
+			}
 			while (OPEN_SETTINGS.consumeClick()) {
 				if (client.screen == null) {
 					client.setScreen(new HighlightSettingsScreen(null));
@@ -48,6 +55,7 @@ public final class JeiInventoryHighlight implements ClientModInitializer {
 			Event<ScreenMouseEvents.AllowMouseClick> mouseClick = ScreenMouseEvents.allowMouseClick(screen);
 			mouseClick.addPhaseOrdering(BEFORE_JEI, Event.DEFAULT_PHASE);
 			mouseClick.register(BEFORE_JEI, JeiInventoryHighlight::onMouseClick);
+			HighlightShortcuts.register(screen, BEFORE_JEI);
 		});
 	}
 

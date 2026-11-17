@@ -3,7 +3,7 @@
 	"id": "jei_inventory_highlight",
 	"version": "${version}",
 	"name": "JEI Inventory Highlight",
-	"description": "Double-click the JEI search bar to highlight matching items in the open inventory and dim everything else.",
+	"description": "Double-click the JEI search bar, press E twice or press H to highlight matching items in the open inventory and dim everything else.",
 	"authors": [
 		"mr-shortman"
 	],

@@ -6,6 +6,17 @@ Search for something in [JEI](https://github.com/mezz/JustEnoughItems), then **d
 every slot of the open inventory (chest, backpack, player inventory, any container screen) that holds a matching
 item gets a yellow frame, all other slots are dimmed. Double-click again to switch it off.
 
+Instead of double-clicking there are two keyboard shortcuts:
+
+- **Press the inventory key twice quickly** (E E): the first press opens the inventory as usual, the second one
+  switches the highlight mode on or off instead of closing it again. Can be turned off in the settings.
+- **H** switches it on or off in any inventory, chest or other container screen, and also in-game (with a short
+  message above the hotbar). The key can be changed under *Controls → Key Binds → Inventory*.
+
+Neither does anything while you are typing into a text field (JEI search bar, creative search, anvil, ...).
+When a shortcut switches the mode on and the JEI search bar is empty, the cursor is put into it, so you can type
+your search right away: E, E, `diamond`.
+
 - The JEI search bar has a yellow frame while the mode is on.
 - Matching is done by JEI itself, so `@mod`, `#tag`, tooltip search etc. work exactly like in the JEI item list.
   Potions and enchanted books are matched by their exact variant.
@@ -25,10 +36,12 @@ The settings screen opens via the **Configure** button in [Mod Menu](https://mod
 - **Highlight color**: the frame around matching slots and around the JEI search bar. Enter it as `#RRGGBB`
   or set it with the red, green and blue sliders.
 - **Dimmed slots**: how opaque the grey layer over non-matching slots is, from 0 % (not dimmed) to 100 %.
-- A preview shows both right away. *Done* or Esc saves, *Cancel* discards, *Reset* restores the defaults
+- **Shortcuts**: whether pressing the inventory key twice toggles the mode; also shows the current toggle key.
+- A preview shows the colour and dimming right away. *Done* or Esc saves, *Cancel* discards, *Reset* restores the defaults
   (`#FFD83D`, 75 %).
 
-The values end up in the same file as `highlight_color` and `dim_opacity` and can be edited there as well.
+The values end up in the same file as `highlight_color`, `dim_opacity` and `double_tap_inventory` and can be
+edited there as well.
 
 ## Requirements
 

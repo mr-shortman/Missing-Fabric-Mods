@@ -10,5 +10,12 @@
 	"screen.jei_inventory_highlight.settings.dimmed_slots_opacity": "Ausgegraute Slots: %s%% Deckkraft",
 	"screen.jei_inventory_highlight.settings.preview": "Vorschau",
 	"screen.jei_inventory_highlight.settings.defaults": "Zurücksetzen",
-	"key.jei_inventory_highlight.settings": "JEI-Inventory-Highlight-Einstellungen"
+	"key.jei_inventory_highlight.settings": "JEI-Inventory-Highlight-Einstellungen",
+	"screen.jei_inventory_highlight.settings.shortcuts": "Tastenkürzel",
+	"screen.jei_inventory_highlight.settings.double_tap": "%s doppelt drücken",
+	"screen.jei_inventory_highlight.settings.double_tap.tooltip": "Zweimal schnell %s öffnet das Inventar und schaltet die Hervorhebung an oder aus.",
+	"screen.jei_inventory_highlight.settings.toggle_key": "An/aus in jedem Inventar: %s",
+	"key.jei_inventory_highlight.toggle": "JEI-Inventar-Hervorhebung an/aus",
+	"message.jei_inventory_highlight.enabled": "Inventar-Hervorhebung: an",
+	"message.jei_inventory_highlight.disabled": "Inventar-Hervorhebung: aus"
 }

@@ -3,7 +3,9 @@ package io.github.mrshortman.jeihighlight;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -16,12 +18,13 @@ import java.util.List;
 
 /**
  * Lets the player pick the highlight colour and how strongly non-matching slots are greyed out, with a small
- * preview of both. Esc and "Done" save, "Cancel" throws the changes away.
+ * preview of both, and switch the double tap of the inventory key on or off. Esc and "Done" save, "Cancel" throws the changes away.
  */
 public final class HighlightSettingsScreen extends Screen {
 	private static final String KEY = "screen." + JeiInventoryHighlight.MOD_ID + ".settings.";
 
 	private static final int COLUMN_WIDTH = 200;
+	private static final int COLUMN_GAP = 10;
 	private static final int ROW_HEIGHT = 20;
 	private static final int ROW_SPACING = 4;
 	private static final int LABEL_HEIGHT = 12;
@@ -64,20 +67,24 @@ public final class HighlightSettingsScreen extends Screen {
 
 	private int highlightColor;
 	private int dimOpacity;
+	private boolean doubleTapInventory;
 
 	private @Nullable EditBox hexField;
 	private final List<ChannelSlider> channelSliders = new ArrayList<>();
 	private @Nullable OpacitySlider opacitySlider;
+	private @Nullable CycleButton<Boolean> doubleTapButton;
 	/** Set while widgets are being brought in line with each other, so they do not keep updating one another. */
 	private boolean syncing;
 
-	// Where init() put things, for drawing the labels, the swatch and the preview.
-	private int left;
-	private int colorLabelY;
-	private int dimLabelY;
-	private int previewLabelY;
+	private record Label(Component text, int x, int y) {
+	}
+
+	// Where init() put things, for drawing the labels, the swatch, the key hint and the preview.
+	private final List<Label> labels = new ArrayList<>();
+	private int keyHintX;
+	private int keyHintY;
 	private int previewY;
-	/** Whether init() left out the headings of the dimming and preview sections for lack of room. */
+	/** Whether init() left out the smaller headings for lack of room; the widgets then say what they are about. */
 	private boolean compact;
 
 	public HighlightSettingsScreen(@Nullable Screen parent) {
@@ -85,55 +92,50 @@ public final class HighlightSettingsScreen extends Screen {
 		this.parent = parent;
 		this.highlightColor = HighlightConfig.highlightColor();
 		this.dimOpacity = HighlightConfig.dimOpacity();
+		this.doubleTapInventory = HighlightConfig.doubleTapInventory();
 	}
 
 	@Override
 	protected void init() {
 		channelSliders.clear();
-		left = width / 2 - COLUMN_WIDTH / 2;
+		labels.clear();
 
 		int buttonsY = height - ROW_HEIGHT - 8;
 		int top = 32;
 		int available = buttonsY - 4 - top;
-		int previewHeight = SLOT_PITCH + 2 * PANEL_PADDING;
-		int controlsHeight = LABEL_HEIGHT + 4 * (ROW_HEIGHT + ROW_SPACING) + ROW_HEIGHT + previewHeight;
-		// On a short screen the two smaller headings go, the opacity slider then says what it is about.
-		int fullHeight = controlsHeight + 2 * LABEL_HEIGHT + 2 * MAX_SECTION_SPACING;
-		compact = available < fullHeight;
-		int contentHeight = compact ? controlsHeight : controlsHeight + 2 * LABEL_HEIGHT;
-		int sectionSpacing = Math.clamp((available - contentHeight) / 2, MIN_SECTION_SPACING, MAX_SECTION_SPACING);
-		contentHeight += 2 * sectionSpacing;
+		// Side by side if there is room: colour on the left, dimming and shortcuts on the right, preview below.
+		boolean twoColumns = width >= 2 * COLUMN_WIDTH + COLUMN_GAP + 16;
+
+		// The most generous layout that fits: with headings and wide gaps first, then without headings.
+		int spacing = MIN_SECTION_SPACING;
+		compact = true;
+		search:
+		for (boolean withHeadings : new boolean[] {true, false}) {
+			for (int gap = MAX_SECTION_SPACING; gap >= MIN_SECTION_SPACING; gap--) {
+				if (contentHeight(twoColumns, !withHeadings, gap) <= available) {
+					compact = !withHeadings;
+					spacing = gap;
+					break search;
+				}
+			}
+		}
 		// Centre the content between the title and the buttons, but never let it slide under the title.
-		int y = top + Math.max(0, (available - contentHeight) / 2);
+		int y = top + Math.max(0, (available - contentHeight(twoColumns, compact, spacing)) / 2);
 
-		colorLabelY = y;
-		y += LABEL_HEIGHT;
-		EditBox hex = new EditBox(font, left, y, COLUMN_WIDTH - ROW_HEIGHT - ROW_SPACING, ROW_HEIGHT, Component.translatable(KEY + "highlight_color"));
-		hex.setMaxLength(7);
-		hex.setHint(Component.literal("#RRGGBB"));
-		hex.setValue(HighlightConfig.formatColor(highlightColor));
-		hex.setResponder(this::onHexChanged);
-		hexField = addRenderableWidget(hex);
-		y += ROW_HEIGHT + ROW_SPACING;
-
-		String[] channels = {"red", "green", "blue"};
-		for (int i = 0; i < channels.length; i++) {
-			int shift = 16 - 8 * i;
-			channelSliders.add(addRenderableWidget(new ChannelSlider(left, y, Component.translatable(KEY + channels[i]), shift)));
-			y += ROW_HEIGHT + ROW_SPACING;
+		int bottom;
+		if (twoColumns) {
+			int left = width / 2 - COLUMN_WIDTH - COLUMN_GAP / 2;
+			int right = width / 2 + COLUMN_GAP / 2;
+			int leftBottom = placeColorSection(left, y);
+			int rightBottom = placeShortcutSection(right, placeDimSection(right, y) + spacing);
+			bottom = Math.max(leftBottom, rightBottom);
+		} else {
+			int left = width / 2 - COLUMN_WIDTH / 2;
+			bottom = placeColorSection(left, y);
+			bottom = placeDimSection(left, bottom + spacing);
+			bottom = placeShortcutSection(left, bottom + spacing);
 		}
-
-		y += sectionSpacing - ROW_SPACING;
-		dimLabelY = y;
-		if (!compact) {
-			y += LABEL_HEIGHT;
-		}
-		opacitySlider = addRenderableWidget(new OpacitySlider(left, y));
-		y += ROW_HEIGHT;
-
-		y += sectionSpacing;
-		previewLabelY = y;
-		previewY = compact ? y : y + LABEL_HEIGHT;
+		placePreview(bottom + spacing);
 
 		int buttonsLeft = width / 2 - (3 * BUTTON_WIDTH + 2 * BUTTON_SPACING) / 2;
 		addRenderableWidget(Button.builder(Component.translatable(KEY + "defaults"), button -> resetToDefaults())
@@ -145,6 +147,88 @@ public final class HighlightSettingsScreen extends Screen {
 		addRenderableWidget(Button.builder(Component.translatable("gui.done"), button -> close(true))
 			.bounds(buttonsLeft + 2 * (BUTTON_WIDTH + BUTTON_SPACING), buttonsY, BUTTON_WIDTH, ROW_HEIGHT)
 			.build());
+	}
+
+	private static int colorSectionHeight() {
+		return LABEL_HEIGHT + 4 * ROW_HEIGHT + 3 * ROW_SPACING;
+	}
+
+	private static int dimSectionHeight(boolean compact) {
+		return (compact ? 0 : LABEL_HEIGHT) + ROW_HEIGHT;
+	}
+
+	private static int shortcutSectionHeight(boolean compact) {
+		return (compact ? 0 : LABEL_HEIGHT) + ROW_HEIGHT + LABEL_HEIGHT;
+	}
+
+	private static int previewSectionHeight(boolean compact) {
+		return (compact ? 0 : LABEL_HEIGHT) + SLOT_PITCH + 2 * PANEL_PADDING;
+	}
+
+	private static int contentHeight(boolean twoColumns, boolean compact, int spacing) {
+		int columns = twoColumns
+			? Math.max(colorSectionHeight(), dimSectionHeight(compact) + spacing + shortcutSectionHeight(compact))
+			: colorSectionHeight() + spacing + dimSectionHeight(compact) + spacing + shortcutSectionHeight(compact);
+		return columns + spacing + previewSectionHeight(compact);
+	}
+
+	/** Heading, hex field with swatch and the three channel sliders. @return the bottom edge */
+	private int placeColorSection(int x, int y) {
+		labels.add(new Label(Component.translatable(KEY + "highlight_color"), x, y));
+		y += LABEL_HEIGHT;
+		EditBox hex = new EditBox(font, x, y, COLUMN_WIDTH - ROW_HEIGHT - ROW_SPACING, ROW_HEIGHT, Component.translatable(KEY + "highlight_color"));
+		hex.setMaxLength(7);
+		hex.setHint(Component.literal("#RRGGBB"));
+		hex.setValue(HighlightConfig.formatColor(highlightColor));
+		hex.setResponder(this::onHexChanged);
+		hexField = addRenderableWidget(hex);
+
+		String[] channels = {"red", "green", "blue"};
+		for (int i = 0; i < channels.length; i++) {
+			y += ROW_HEIGHT + ROW_SPACING;
+			int shift = 16 - 8 * i;
+			channelSliders.add(addRenderableWidget(new ChannelSlider(x, y, Component.translatable(KEY + channels[i]), shift)));
+		}
+		return y + ROW_HEIGHT;
+	}
+
+	/** Heading and opacity slider. @return the bottom edge */
+	private int placeDimSection(int x, int y) {
+		if (!compact) {
+			labels.add(new Label(Component.translatable(KEY + "dimmed_slots"), x, y));
+			y += LABEL_HEIGHT;
+		}
+		opacitySlider = addRenderableWidget(new OpacitySlider(x, y));
+		return y + ROW_HEIGHT;
+	}
+
+	/** Heading, the double-tap switch and which key toggles the mode. @return the bottom edge */
+	private int placeShortcutSection(int x, int y) {
+		if (!compact) {
+			labels.add(new Label(Component.translatable(KEY + "shortcuts"), x, y));
+			y += LABEL_HEIGHT;
+		}
+		Component inventoryKey = minecraft.options.keyInventory.getTranslatedKeyMessage();
+		doubleTapButton = addRenderableWidget(CycleButton.onOffBuilder(doubleTapInventory)
+			.create(x, y, COLUMN_WIDTH, ROW_HEIGHT, Component.translatable(KEY + "double_tap", inventoryKey),
+				(button, value) -> doubleTapInventory = value));
+		doubleTapButton.setTooltip(Tooltip.create(Component.translatable(KEY + "double_tap.tooltip", inventoryKey)));
+		y += ROW_HEIGHT;
+		keyHintX = x;
+		keyHintY = y + 3;
+		return y + LABEL_HEIGHT;
+	}
+
+	private void placePreview(int y) {
+		if (!compact) {
+			labels.add(new Label(Component.translatable(KEY + "preview"), width / 2 - previewWidth() / 2, y));
+			y += LABEL_HEIGHT;
+		}
+		previewY = y;
+	}
+
+	private static int previewWidth() {
+		return PREVIEW.size() * SLOT_PITCH + 2 * PANEL_PADDING;
 	}
 
 	private void onHexChanged(String text) {
@@ -162,6 +246,7 @@ public final class HighlightSettingsScreen extends Screen {
 	private void resetToDefaults() {
 		highlightColor = HighlightConfig.DEFAULT_HIGHLIGHT_COLOR;
 		dimOpacity = HighlightConfig.DEFAULT_DIM_OPACITY;
+		doubleTapInventory = HighlightConfig.DEFAULT_DOUBLE_TAP_INVENTORY;
 		syncWidgets(true);
 	}
 
@@ -179,6 +264,9 @@ public final class HighlightSettingsScreen extends Screen {
 			if (opacitySlider != null) {
 				opacitySlider.sync();
 			}
+			if (doubleTapButton != null) {
+				doubleTapButton.setValue(doubleTapInventory);
+			}
 		} finally {
 			syncing = false;
 		}
@@ -186,7 +274,7 @@ public final class HighlightSettingsScreen extends Screen {
 
 	private void close(boolean save) {
 		if (save) {
-			HighlightConfig.set(highlightColor, dimOpacity);
+			HighlightConfig.set(highlightColor, dimOpacity, doubleTapInventory);
 		}
 		minecraft.setScreen(parent);
 	}
@@ -201,14 +289,14 @@ public final class HighlightSettingsScreen extends Screen {
 		super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 		graphics.centeredText(font, title, width / 2, 15, TEXT_COLOR);
 
-		graphics.text(font, Component.translatable(KEY + "highlight_color"), left, colorLabelY + 2, LABEL_COLOR);
-		if (!compact) {
-			graphics.text(font, Component.translatable(KEY + "dimmed_slots"), left, dimLabelY + 2, LABEL_COLOR);
-			graphics.text(font, Component.translatable(KEY + "preview"), left, previewLabelY + 2, LABEL_COLOR);
+		for (Label label : labels) {
+			graphics.text(font, label.text(), label.x(), label.y() + 2, LABEL_COLOR);
 		}
+		graphics.text(font, Component.translatable(KEY + "toggle_key",
+			HighlightShortcuts.TOGGLE_HIGHLIGHT.getTranslatedKeyMessage()), keyHintX, keyHintY, LABEL_COLOR);
 
 		if (hexField != null) {
-			int x = left + COLUMN_WIDTH - ROW_HEIGHT;
+			int x = hexField.getRight() + ROW_SPACING;
 			int y = hexField.getY();
 			graphics.fill(x, y, x + ROW_HEIGHT, y + ROW_HEIGHT, 0xFF000000);
 			graphics.fill(x + 1, y + 1, x + ROW_HEIGHT - 1, y + ROW_HEIGHT - 1, 0xFFA0A0A0);
@@ -221,7 +309,7 @@ public final class HighlightSettingsScreen extends Screen {
 	/** A row of inventory slots as they look with the current settings while searching for diamonds. */
 	private void extractPreview(GuiGraphicsExtractor graphics) {
 		int count = PREVIEW.size();
-		int panelWidth = count * SLOT_PITCH + 2 * PANEL_PADDING;
+		int panelWidth = previewWidth();
 		int panelLeft = width / 2 - panelWidth / 2;
 		graphics.fill(panelLeft, previewY, panelLeft + panelWidth, previewY + SLOT_PITCH + 2 * PANEL_PADDING, PANEL_COLOR);
 
