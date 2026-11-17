@@ -15,6 +15,13 @@ repositories {
 			includeGroup 'net.mezzdev.config'
 		}
 	}
+	maven {
+		name = 'TerraformersMC (Mod Menu)'
+		url = 'https://maven.terraformersmc.com/releases/'
+		content {
+			includeGroup 'com.terraformersmc'
+		}
+	}
 }
 
 dependencies {
@@ -26,6 +33,10 @@ dependencies {
 	compileOnly "mezz.jei:jei-${project.minecraft_version}-common-api:${project.jei_version}"
 	compileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:${project.jei_version}"
 	runtimeOnly "mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}"
+
+	// Optional: puts the settings screen behind the "Configure" button of Mod Menu.
+	compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+	localRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
 
 processResources {

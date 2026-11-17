@@ -17,6 +17,9 @@
 		],
 		"jei_mod_plugin": [
 			"io.github.mrshortman.jeihighlight.JeiHighlightPlugin"
+		],
+		"modmenu": [
+			"io.github.mrshortman.jeihighlight.ModMenuIntegration"
 		]
 	},
 	"mixins": [
@@ -28,5 +31,8 @@
 		"java": ">=25",
 		"fabric-api": "*",
 		"jei": "*"
+	},
+	"suggests": {
+		"modmenu": "*"
 	}
 }

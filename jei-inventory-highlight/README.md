@@ -17,11 +17,25 @@ item gets a yellow frame, all other slots are dimmed. Double-click again to swit
 - Nothing is dimmed while the search bar is empty or JEI is hidden.
 - The on/off state is remembered in `config/jei_inventory_highlight.properties`.
 
+## Settings
+
+The settings screen opens via the **Configure** button in [Mod Menu](https://modrinth.com/mod/modmenu)
+(optional), or with a key you can assign under *Controls → Key Binds → Inventory* (unbound by default).
+
+- **Highlight color**: the frame around matching slots and around the JEI search bar. Enter it as `#RRGGBB`
+  or set it with the red, green and blue sliders.
+- **Dimmed slots**: how opaque the grey layer over non-matching slots is, from 0 % (not dimmed) to 100 %.
+- A preview shows both right away. *Done* or Esc saves, *Cancel* discards, *Reset* restores the defaults
+  (`#FFD83D`, 75 %).
+
+The values end up in the same file as `highlight_color` and `dim_opacity` and can be edited there as well.
+
 ## Requirements
 
 - Minecraft 26.1.2, Fabric Loader ≥ 0.18.4, Java 25
 - Fabric API
 - JEI for 26.1.2
+- optional: Mod Menu for 26.1.2
 
 ## Building
 

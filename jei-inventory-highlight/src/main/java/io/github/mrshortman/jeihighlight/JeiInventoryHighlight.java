@@ -2,9 +2,12 @@ package io.github.mrshortman.jeihighlight;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.fabricmc.fabric.api.event.Event;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.Identifier;
@@ -20,12 +23,25 @@ public final class JeiInventoryHighlight implements ClientModInitializer {
 	private static final Identifier BEFORE_JEI = Identifier.fromNamespaceAndPath(MOD_ID, "before_jei");
 	private static final long DOUBLE_CLICK_MILLIS = 300;
 
+	/** Opens the settings screen; unbound by default, Mod Menu's "Configure" button opens it too. */
+	private static final KeyMapping OPEN_SETTINGS = new KeyMapping(
+		"key." + MOD_ID + ".settings", InputConstants.UNKNOWN.getValue(), KeyMapping.Category.INVENTORY);
+
 	private static boolean awaitingSecondClick;
 	private static long firstClickMillis;
 
 	@Override
 	public void onInitializeClient() {
 		HighlightConfig.load();
+
+		KeyMappingHelper.registerKeyMapping(OPEN_SETTINGS);
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			while (OPEN_SETTINGS.consumeClick()) {
+				if (client.screen == null) {
+					client.setScreen(new HighlightSettingsScreen(null));
+				}
+			}
+		});
 
 		// Screen events are reset on every init, so they are registered again each time (JEI does the same).
 		ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {

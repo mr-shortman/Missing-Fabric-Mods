@@ -1,0 +1,14 @@
+{
+	"screen.jei_inventory_highlight.settings.title": "JEI Inventory Highlight",
+	"screen.jei_inventory_highlight.settings.highlight_color": "Hervorhebungsfarbe",
+	"screen.jei_inventory_highlight.settings.red": "Rot",
+	"screen.jei_inventory_highlight.settings.green": "Grün",
+	"screen.jei_inventory_highlight.settings.blue": "Blau",
+	"screen.jei_inventory_highlight.settings.value": "%s: %s",
+	"screen.jei_inventory_highlight.settings.dimmed_slots": "Ausgegraute Slots",
+	"screen.jei_inventory_highlight.settings.dim_opacity": "Deckkraft: %s%%",
+	"screen.jei_inventory_highlight.settings.dimmed_slots_opacity": "Ausgegraute Slots: %s%% Deckkraft",
+	"screen.jei_inventory_highlight.settings.preview": "Vorschau",
+	"screen.jei_inventory_highlight.settings.defaults": "Zurücksetzen",
+	"key.jei_inventory_highlight.settings": "JEI-Inventory-Highlight-Einstellungen"
+}
